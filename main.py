@@ -1,5 +1,4 @@
-num1 = 5
-def sum_two_nums(a,b):
-    num2 = 10
-    return a + b
- print(num2)
+from snake_game import SnakeGame
+
+game = SnakeGame()
+game.run_game(True)

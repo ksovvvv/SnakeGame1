@@ -4,10 +4,10 @@ import pygame as pg
 
 def load_img(name):
     img = pg.image.load(name)
-    #img = img.convert()
-    #colorkey = img.get_at((0, 0))
-    #img.set_colorkey(colorkey)
-    img = pg.transform.scale(img, (100, 100))
+    img = img.convert()
+    colorkey = img.get_at((0, 0))
+    img.set_colorkey(colorkey)
+    img = pg.transform.scale(img, (30, 30))
     return img
 
 class Apple(pg.sprite.Sprite):

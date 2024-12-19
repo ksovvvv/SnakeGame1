@@ -1,0 +1,5 @@
+#my ignore list
+/.idea/
+/__pycache__/
+/venv/
+/Game_Objects/__pycache__/

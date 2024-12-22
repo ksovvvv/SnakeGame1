@@ -2,6 +2,7 @@ import pygame as pg
 
 import game_config
 import game_config as config
+from Database.db_manager import DataBase
 from Game_Objects.apple import Apple
 from game_dialog import GameDialog
 from Game_Objects.snake import Snake
@@ -24,15 +25,18 @@ class SnakeGame():
         self.__FPS = config.FPS
         self.__clock = pg.time.Clock()
 
+        self.__db_manager = DataBase()
+        self.table_name = 'scores'
+        self.__db_manager.create_table(self.table_name)
+
         # Создаем объект класса GameDialog
         self.__game_dialog = GameDialog()
 
         # Запрашиваем имя игрока
         self.__player_name = self.__game_dialog.show_dialog_login()
-        print(self.__player_name)
 
         # TODO
-        #self.__first_player_score = 10
+        self.__db_manager.insert(self.table_name, self.__player_name, 0)
 
         # Вызываем метод инициализациии остальных параметров
         self.__init_game()
@@ -78,6 +82,7 @@ class SnakeGame():
         if self.snake.listBodySnake[0].rect.y < 0 or self.snake.listBodySnake[0].rect.x < 0 \
                 or self.snake.listBodySnake[0].rect.right > self.screen.get_width() \
                 or self.snake.listBodySnake[0].rect.bottom > self.screen.get_height():
+            self.__db_manager.update_player_data(self.table_name, self.__player_name, self.__current_player_score)
             # Отображаем диалоговое окно GameOver
             if self.__game_dialog.show_dialog_game_over():
                 self.__init_game()
@@ -90,6 +95,8 @@ class SnakeGame():
             for segment in self.snake.listBodySnake[1:]:
                 if pg.sprite.collide_rect(segment, self.snake.listBodySnake[0]):
                     print('gameover')
+                    self.__db_manager.update_player_data(self.table_name, self.__player_name,
+                                                         self.__current_player_score)
                     if self.__game_dialog.show_dialog_game_over():
                         self.__init_game()
                     else:

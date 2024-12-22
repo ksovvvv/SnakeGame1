@@ -24,9 +24,6 @@ class SnakeGame():
         self.__FPS = config.FPS
         self.__clock = pg.time.Clock()
 
-        # Текущее значение очков игрока
-        self.__current_player_score = 0
-
         # Создаем объект класса GameDialog
         self.__game_dialog = GameDialog()
 
@@ -41,6 +38,10 @@ class SnakeGame():
         self.__init_game()
 
     def __init_game(self):
+
+        # Текущее значение очков игрока
+        self.__current_player_score = 0
+
         # Создаем объект основного окна
         self.screen = pg.display.set_mode(game_config.WINDOW_SIZE)
         pg.display.set_caption("Змейка")
@@ -60,26 +61,39 @@ class SnakeGame():
             self.apples.add(apple)
 
     def check_collision(self):
+        # Проверяем столкновение головы snake c apple
         for apple in self.apples:
             if pg.sprite.collide_rect(apple, self.snake.listBodySnake[0]):
                 self.__current_player_score += 1
                 self.apples.remove(apple)
 
+        # Если количество apple уменьшилось
         if len(self.apples) < self.apple_count:
-            newapple = Apple(self.screen)
-            self.apples.add(newapple)
+            # Объект apple
+            newApple = Apple(self.screen)
+            self.apples.add(newApple)
             self.snake.add_segment()
 
-        for segment in self.snake.listBodySnake[1:]:
-            if self.snake.listBodySnake < 3:
-                self.__game_dialog.show_dialog_game_over(False)
+        # Если змейка столкнулась со стеной
+        if self.snake.listBodySnake[0].rect.y < 0 or self.snake.listBodySnake[0].rect.x < 0 \
+                or self.snake.listBodySnake[0].rect.right > self.screen.get_width() \
+                or self.snake.listBodySnake[0].rect.bottom > self.screen.get_height():
+            # Отображаем диалоговое окно GameOver
+            if self.__game_dialog.show_dialog_game_over():
+                self.__init_game()
+            else:
+                exit()
 
-            if pg.sprite.collide_rect(segment, self.snake.listBodySnake[0]):
-                print('gameover')
-                if self.__game_dialog.show_dialog_game_over():
-                    self.__init_game()
-                else:
-                    exit()
+        # Если змейка столкнулась сама с собой
+        # Проверяем когда змейка уже больше трех
+        if len(self.snake.listBodySnake) > 3:
+            for segment in self.snake.listBodySnake[1:]:
+                if pg.sprite.collide_rect(segment, self.snake.listBodySnake[0]):
+                    print('gameover')
+                    if self.__game_dialog.show_dialog_game_over():
+                        self.__init_game()
+                    else:
+                        exit()
 
 
         #for segment in :
